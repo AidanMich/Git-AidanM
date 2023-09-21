@@ -7,20 +7,31 @@
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.io.*;
-import java.util.logging.*;
 
 public class Blob {
     public static void blob(String fileName) throws IOException, NoSuchAlgorithmException {
-        String str = sha1(read(fileName));
-        write(read(fileName), str);
-    }
+        try {
+            String content = read(fileName);
+            String hash = sha1(content);
 
-    public static void write(String input, String outputFile) throws FileNotFoundException {
+            String folderPath = "objects";
+            String newFileName = hash;
 
-        PrintWriter pw = new PrintWriter(
-                "/Users/aidanmichaelson/Documents/Honors Topics in Computer Science/Git-AidanM/objects/" + outputFile);
-        pw.print(input);
-        pw.close();
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            String filePath = folderPath + File.separator + newFileName;
+
+            File newFile = new File(filePath);
+
+            PrintWriter pw = new PrintWriter(newFile);
+            pw.print(content);
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String read(String fileName) throws IOException {
@@ -46,8 +57,7 @@ public class Blob {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
         // System.out.println("Hello " + sha1("Hello"));
-        String file = "test.txt";
-        blob(file);
+        blob("test.txt");
 
         String file2 = "test2.txt";
         blob(file2);

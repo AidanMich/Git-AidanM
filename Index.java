@@ -16,58 +16,66 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Index {
 
     public static void init() throws FileNotFoundException {
-        File theDir = new File("/Users/aidanmichaelson/Documents/Honors Topics in Computer Science/Git-AidanM/objects");
+        File theDir = new File("objects");
         if (!theDir.exists()) {
             theDir.mkdirs();
         }
-        PrintWriter pw = new PrintWriter(
-                "/Users/aidanmichaelson/Documents/Honors Topics in Computer Science/Git-AidanM/index");
-        pw.close();
+
+        File file = new File("Index");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
     }
 
     public static void add(String fileName) throws NoSuchAlgorithmException, IOException {
         Blob.blob(fileName);
+        File file = new File("Index");
 
         // add hash file to object
         // add txt name and hash to index.
-        PrintWriter pw = new PrintWriter(
-                "/Users/aidanmichaelson/Documents/Honors Topics in Computer Science/Git-AidanM/index");
-        pw.print(fileName + ": " + Blob.sha1(Blob.read(fileName)));
+        PrintWriter pw = new PrintWriter(file);
+        pw.print(fileName + ": " + Blob.sha1(Blob.read(fileName)) + "\n");
         pw.close();
     }
 
     public static void remove(String fileName) throws IOException, NoSuchAlgorithmException {
-        File inputFile = new File(
-                "/Users/aidanmichaelson/Documents/Honors Topics in Computer Science/Git-AidanM/index");
-        File tempFile = new File("myTempFile.txt");
+        String objectsFolderPath = "objects";
 
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+        String content = Blob.read(fileName);
+        String hash = Blob.sha1(content);
+        String entryToDelete = "fileName: " + hash;
 
-        String lineToRemove = fileName + ": " + Blob.sha1(Blob.read(fileName));
-        String currentLine;
+        try {
+            List<String> indexContents = new ArrayList<>();
+            BufferedReader indexReader = new BufferedReader(new FileReader("Index"));
+            PrintWriter pw = new PrintWriter("Index");
+            String line;
+            while ((line = indexReader.readLine()) != null) {
+                if (!line.equals(entryToDelete)) {
+                    indexContents.add(line);
+                }
+            }
+            indexReader.close();
+            pw.close();
 
-        while ((currentLine = reader.readLine()) != null) {
-            // trim newline when comparing with lineToRemove
-            String trimmedLine = currentLine.trim();
-            if (trimmedLine.equals(lineToRemove))
-                continue;
-            writer.write(currentLine + System.getProperty("line.separator"));
+            BufferedWriter indexWriter = new BufferedWriter(new FileWriter("Index"));
+            for (String contents : indexContents) {
+                indexWriter.write(content);
+                indexWriter.newLine();
+            }
+            indexWriter.close();
+
+            File fileToDelete = new File(hash);
+            fileToDelete.delete();
+        } catch (IOException e) {
+            System.err.println("An error occurred: " + e.getMessage());
         }
-        writer.close();
-        reader.close();
-        boolean successful = tempFile.renameTo(inputFile);
-
-        // remove file from directory
-        Path path = FileSystems.getDefault()
-                .getPath("/Users/aidanmichaelson/Documents/Honors Topics in Computer Science/Git-AidanM/objects/"
-                        + Blob.sha1(Blob.read(fileName)));
-        Files.delete(path);
 
     }
 

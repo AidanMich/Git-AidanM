@@ -1,0 +1,49 @@
+[
+    {
+        "className": "Blob",
+        "methodConfigs": [
+            {
+                "methodName": "blob",
+                "parameters":["String"],
+                "values":["str"]
+            },
+            {
+                "methodName": "read",
+                "parameters": ["String"],
+                "values": []
+            },
+            {
+                "methodName": "write",
+                "parameters": [
+                    "String"
+                ],
+                "values": []
+            },
+            {
+                "methodName": "sha1",
+                "parameters": ["String"],
+                "values": ["sb"]
+            }
+        ]
+    },
+    {
+        "className": "Index",
+        "methodConfigs": [
+            {
+                "methodName": "init",
+                "parameters": [],
+                "values": ["theDir"]
+            },
+            {
+                "methodName": "add",
+                "parameters":["String"],
+                "values":[]
+            },
+            {
+                "methodName": "remove",
+                "parameters":["String"],
+                "values":["inputFile", "tempFile", "reader", "writer", "lineToRemove", "currentLine", "successful", "paths"]
+            }
+        ]
+    }
+]
