@@ -7,12 +7,27 @@ import java.util.Date;
 public class Commit {
     private String treeSHA1;
     private String parentCommitSHA1;
+    private String nextCommitSHA1;
     private String author;
     private String date;
     private String summary;
 
-    public Commit(String treeSHA1, String parentCommitSHA1, String author, String summary) {
-        this.treeSHA1 = treeSHA1;
+    public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
+        Commit tester = new Commit("randomstringofletters", "", "Asher Engelberg", "Wow look at this awesome commit!");
+        Commit test2 = new Commit("", "", "Poopy mcPooped my pants",
+                "This one tests if both the parent and next commits are null");
+        Commit test3 = new Commit("parentSHAPlaceholder", "NextSHAPlaceholder", "Ronald McDonald",
+                "What if the Commit has both a previous and next commit");
+        tester.writeToFile();
+        test2.writeToFile();
+        test3.writeToFile();
+
+    }
+
+    public Commit(String parentCommitSHA1, String nextCommit, String author, String summary)
+            throws NoSuchAlgorithmException, IOException {
+        this.nextCommitSHA1 = nextCommit;
+        this.treeSHA1 = Commit.createTree();
         this.parentCommitSHA1 = parentCommitSHA1;
         this.author = author;
         this.date = getCurrentDate();
@@ -62,6 +77,9 @@ public class Commit {
             if (parentCommitSHA1 != null) {
                 writer.write(parentCommitSHA1 + "\n");
             }
+            if (nextCommitSHA1 != null) {
+                writer.write(nextCommitSHA1 + "\n");
+            }
             writer.write(author + "\n");
             writer.write(date + "\n");
             writer.write(summary + "\n");
@@ -69,7 +87,7 @@ public class Commit {
     }
 
     // Create a Tree and return its SHA1
-    public String createTree() throws NoSuchAlgorithmException, IOException {
+    public static String createTree() throws NoSuchAlgorithmException, IOException {
         Tree tree = new Tree("tree.txt");
         // Add entries to the tree, for example:
         // tree.add("file1.txt");
@@ -79,7 +97,7 @@ public class Commit {
         return tree.getSHA1("tree.txt");
     }
 
-    public String getDate() {
+    public static String getDate() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(cal.getTime());
