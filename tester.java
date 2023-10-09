@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-public class Tester {
+public class tester {
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
 
         Index.init();
