@@ -1,8 +1,10 @@
 import java.io.*;
+import java.nio.file.Files;
 import java.security.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.nio.file.Path;
 
 public class Commit {
     private String treeSHA1;
@@ -32,6 +34,13 @@ public class Commit {
         this.author = author;
         this.date = getCurrentDate();
         this.summary = summary;
+
+        // String filePath = "commit";
+        // filePath.getPath ();
+        // String headName = Files.readString (filePath);
+
+        String headName = readFile ("commit");
+        head (headName);
     }
 
     public String getTreeSHA1() {
@@ -117,5 +126,34 @@ public class Commit {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(cal.getTime());
+    }
+
+    private void head(String headName) throws IOException, NoSuchAlgorithmException
+    {
+        headName = Blob.sha1 (headName);
+        File head = new File("head");
+        if (!head.exists())
+        {
+            head.createNewFile();
+        }
+        Files.write(head.toPath(), headName.getBytes());
+    }
+
+    public String readFile (String fileName) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line = null;
+        String ls = System.getProperty("line.separator");
+        while ((line = reader.readLine()) != null) {
+	        stringBuilder.append(line);
+	        stringBuilder.append(ls);
+        }
+        // delete the last new line separator
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        reader.close();
+
+        String content = stringBuilder.toString();
+        return content;
     }
 }
