@@ -13,14 +13,14 @@ public class Commit {
     private String summary;
 
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
-        Commit tester = new Commit("randomstringofletters", "", "Asher Engelberg", "Wow look at this awesome commit!");
-        Commit test2 = new Commit("", "", "Poopy mcPooped my pants",
+        Commit tester = new Commit("randomstringofletters", "", "Aidan Michaelson", "Wow look at this awesome commit!");
+        Commit test2 = new Commit("", "", "hahah not writing that",
                 "This one tests if both the parent and next commits are null");
         Commit test3 = new Commit("parentSHAPlaceholder", "NextSHAPlaceholder", "Ronald McDonald",
                 "What if the Commit has both a previous and next commit");
-        tester.writeToFile();
-        test2.writeToFile();
-        test3.writeToFile();
+         tester.writeToFile("commit");
+         test2.writeToFile("commit2");
+         test3.writeToFile("commit3");
 
     }
 
@@ -51,16 +51,21 @@ public class Commit {
     }
 
     public String generateSHA1() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String fileContents = treeSHA1 + "\n" + parentCommitSHA1 + "\n" + author + "\n" + date + "\n" + summary + "\n";
-        MessageDigest digest = MessageDigest.getInstance("SHA-1");
-        byte[] hash = digest.digest(fileContents.getBytes("UTF-8"));
+        // String fileContents = treeSHA1 + "\n" + parentCommitSHA1 + "\n" + author +
+        // "\n" + getDate() + "\n" + summary;
+        // String parentCommitSHA1, String nextCommit, String author, String summary
+        String fileContents = parentCommitSHA1 + "\n" + nextCommitSHA1 + "\n" + author + "\n" + getDate() + "\n"
+                + summary;
 
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            hexString.append(String.format("%02x", b));
-        }
+        // MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        // byte[] hash = digest.digest(fileContents.getBytes("UTF-8"));
 
-        return hexString.toString();
+        // StringBuilder hexString = new StringBuilder();
+        // for (byte b : hash) {
+        // hexString.append(String.format("%02x", b));
+        // }
+        String hex = Blob.sha1(fileContents);
+        return hex;
     }
 
     public String getCurrentDate() {
@@ -68,21 +73,32 @@ public class Commit {
         return sdf.format(new Date());
     }
 
-    public void writeToFile() throws IOException, NoSuchAlgorithmException {
-        String sha1 = generateSHA1();
-        String filePath = "objects/" + sha1;
+    // public void writeToFile() throws IOException, NoSuchAlgorithmException {
+    // String sha1 = generateSHA1();
+    // String filePath = "objects/" + sha1;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write(treeSHA1 + "\n");
-            if (parentCommitSHA1 != null) {
-                writer.write(parentCommitSHA1 + "\n");
-            }
-            if (nextCommitSHA1 != null) {
-                writer.write(nextCommitSHA1 + "\n");
-            }
-            writer.write(author + "\n");
-            writer.write(date + "\n");
-            writer.write(summary + "\n");
+    // try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+    // writer.write(treeSHA1 + "\n");
+    // if (parentCommitSHA1 != null) {
+    // writer.write(parentCommitSHA1 + "\n");
+    // }
+    // if (nextCommitSHA1 != null) {
+    // writer.write(nextCommitSHA1 + "\n");
+    // }
+    // writer.write(author + "\n");
+    // writer.write(date + "\n");
+    // writer.write(summary + "\n");
+    // }
+    // }
+
+    public void writeToFile(String filePath) throws IOException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            writer.println(treeSHA1);
+            writer.println(parentCommitSHA1 != null ? parentCommitSHA1 : "");
+            writer.println(""); // Placeholder for the SHA1 of the next commit (blank initially)
+            writer.println(author);
+            writer.println(date);
+            writer.println(summary);
         }
     }
 
@@ -94,7 +110,7 @@ public class Commit {
         // tree.add("file2.txt");
         // ...
         tree.generateBlob();
-        return tree.getSHA1("tree.txt");
+        return tree.sha1("tree.txt");
     }
 
     public static String getDate() {

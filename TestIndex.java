@@ -30,7 +30,7 @@ public class TestIndex {
         String hash = Blob.sha1(fileContents);
 
         String indexContents = Blob.read("Index");
-        assertEquals("junittester.txt: " + hash + "\n", indexContents);
+        assertEquals("junittester.txt: " + hash, indexContents);
 
         Index.remove("junittester.txt");
         String fileContents2 = Blob.read("junittester.txt");
