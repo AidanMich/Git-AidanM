@@ -15,33 +15,45 @@ public class Commit {
     private String summary;
 
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
-        Commit tester = new Commit("randomstringofletters", "", "Aidan Michaelson", "Wow look at this awesome commit!");
-        Commit test2 = new Commit("", "", "hahah not writing that",
+        Commit tester = new Commit("randomstringofletters", "Aidan Michaelson", "Wow look at this awesome commit!");
+        Commit test2 = new Commit("", "hahah not writing that",
                 "This one tests if both the parent and next commits are null");
-        Commit test3 = new Commit("parentSHAPlaceholder", "NextSHAPlaceholder", "Ronald McDonald",
+        Commit test3 = new Commit("parentSHAPlaceholder", "Ronald McDonald",
                 "What if the Commit has both a previous and next commit");
          tester.writeToFile("commit");
-         test2.writeToFile("commit2");
-         test3.writeToFile("commit3");
+         test2.writeToFile("commit");
+         test3.writeToFile("commit");
 
     }
 
-    public Commit(String parentCommitSHA1, String nextCommit, String author, String summary)
+    public Commit(String parentCommitSHA1, String author, String summary)
             throws NoSuchAlgorithmException, IOException {
-        this.nextCommitSHA1 = nextCommit;
+        //this.nextCommitSHA1 = nextCommit;
+
         this.treeSHA1 = Commit.createTree();
         this.parentCommitSHA1 = parentCommitSHA1;
         this.author = author;
         this.date = getCurrentDate();
         this.summary = summary;
 
+        File exists = new File ("commit");
+        if (exists.exists ())
+        {
+            writeToFile2 ("commit");
+            String headName = readFile ("commit");
+         head (headName);
+        }
+        else {
+        exists.createNewFile();
         // String filePath = "commit";
         // filePath.getPath ();
         // String headName = Files.readString (filePath);
 
         String headName = readFile ("commit");
         head (headName);
+        }
     }
+    
 
     public String getTreeSHA1() {
         return treeSHA1;
@@ -63,7 +75,7 @@ public class Commit {
         // String fileContents = treeSHA1 + "\n" + parentCommitSHA1 + "\n" + author +
         // "\n" + getDate() + "\n" + summary;
         // String parentCommitSHA1, String nextCommit, String author, String summary
-        String fileContents = parentCommitSHA1 + "\n" + nextCommitSHA1 + "\n" + author + "\n" + getDate() + "\n"
+        String fileContents = parentCommitSHA1 + "\n" + author + "\n" + getDate() + "\n"
                 + summary;
 
         // MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -111,6 +123,17 @@ public class Commit {
         }
     }
 
+    public void writeToFile2(String filePath) throws IOException, NoSuchAlgorithmException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+             writer.println(treeSHA1);
+             writer.println(parentCommitSHA1 != null ? parentCommitSHA1 : "");
+            //writer.println(Blob.sha1 (Commit.readFile ("commit"))); // Placeholder for the SHA1 of the next commit (blank initially)
+             writer.println(author);
+             writer.println(date);
+             writer.println(summary);
+        }
+    }
+
     // Create a Tree and return its SHA1
     public static String createTree() throws NoSuchAlgorithmException, IOException {
         Tree tree = new Tree("tree.txt");
@@ -139,7 +162,7 @@ public class Commit {
         Files.write(head.toPath(), headName.getBytes());
     }
 
-    public String readFile (String fileName) throws IOException
+    public static String readFile (String fileName) throws IOException
     {
         BufferedReader reader = new BufferedReader(new FileReader(fileName));
         StringBuilder stringBuilder = new StringBuilder();
@@ -150,7 +173,7 @@ public class Commit {
 	        stringBuilder.append(ls);
         }
         // delete the last new line separator
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        //stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         reader.close();
 
         String content = stringBuilder.toString();

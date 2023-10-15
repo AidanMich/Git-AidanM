@@ -3,6 +3,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
 
 public class TestCommit {
     private static final String TEST_TREE_SHA1 = "8c411a89ed6d846f064ed0decdba3a857f0d1667";
@@ -51,7 +52,7 @@ public class TestCommit {
 
     @Test
     public void testGenerateSHA1() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_PARENT_COMMIT_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(TEST_TREE_SHA1, TEST_AUTHOR, TEST_SUMMARY);
         String expectedSHA1 = Blob
                 .sha1(TEST_TREE_SHA1 + "\n" + TEST_PARENT_COMMIT_SHA1 + "\n" + TEST_AUTHOR + "\n" +
                         commit.getDate()
@@ -62,13 +63,13 @@ public class TestCommit {
 
     @Test
     public void testGetDate() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_PARENT_COMMIT_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(TEST_TREE_SHA1, TEST_AUTHOR, TEST_SUMMARY);
         assertNotNull(commit.getDate());
     }
 
     @Test
     public void testCreateTree() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_PARENT_COMMIT_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(TEST_TREE_SHA1, TEST_AUTHOR, TEST_SUMMARY);
         String treeSHA1 = commit.createTree();
         assertNotNull(treeSHA1);
     }
@@ -85,5 +86,27 @@ public class TestCommit {
             }
         }
         directory.delete();
+    }
+
+    @Test
+    public void testTwoCommits() throws IOException, NoSuchAlgorithmException {
+        
+        String parent = "";
+        String author1 = "Aidan";
+        String text1 = "First commit";
+
+        Commit parentCommit = new Commit(parent, author1, text1);
+
+        String author2 = "Delaney";
+        String text2 = "Second commit";
+
+        String str = Blob.sha1 (Commit.readFile ("commit"));
+        Commit commit = new Commit("objects/" + str, author2, text2);
+        //------------------
+        assertNotNull(commit);
+        String expected = commit.getTreeSHA1() + "\n" + "objects/" + str + "\n\n" + author2 + "\n" + commit.getCurrentDate() + "\n" + text2;
+        String actual = Commit.readFile("commit");
+        assertEquals(expectedContents, commitContents);
+    
     }
 }

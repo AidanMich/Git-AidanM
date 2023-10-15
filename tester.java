@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 public class tester {
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
 
-        Commit.writeToFile ()
+        //Commit.writeToFile ()
         // Index.init();
 
         // String file = "test.txt";
