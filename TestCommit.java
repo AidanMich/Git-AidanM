@@ -6,10 +6,10 @@ import java.io.*;
 import java.security.NoSuchAlgorithmException;
 
 public class TestCommit {
-    private static final String TEST_TREE_SHA1 = "8c411a89ed6d846f064ed0decdba3a857f0d1667";
-    private static final String TEST_PARENT_COMMIT_SHA1 = "f924e482dd33576fd0de90b6376f1671b08b5f52";
-    private static final String TEST_AUTHOR = "hello hello";
-    private static final String TEST_SUMMARY = "oblia di obla da";
+    private static final String treeSHA1 = "8c411a89ed6d846f064ed0decdba3a857f0d1667";
+    private static final String parrentCommit = "f924e482dd33576fd0de90b6376f1671b08b5f52";
+    private static final String testAuthor = "hello hello";
+    private static final String testSummary = "oblia di obla da";
 
     @Before
     public void setUp() throws Exception {
@@ -31,7 +31,7 @@ public class TestCommit {
 
     @Test
     public void testWriteToFile() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_PARENT_COMMIT_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(treeSHA1, testAuthor, testSummary);
         String filePath = "objects/" + commit.generateSHA1();
 
         commit.writeToFile(filePath);
@@ -41,35 +41,35 @@ public class TestCommit {
 
         // Verify the content of the written file
         try (BufferedReader reader = new BufferedReader(new FileReader(commitFile))) {
-            assertEquals(TEST_TREE_SHA1, reader.readLine());
-            assertEquals(TEST_PARENT_COMMIT_SHA1, reader.readLine());
+            assertEquals(treeSHA1, reader.readLine());
+            assertEquals(parrentCommit, reader.readLine());
             assertEquals("", reader.readLine());
-            assertEquals(TEST_AUTHOR, reader.readLine());
-            assertNotNull(reader.readLine()); // Date format can vary
-            assertEquals(TEST_SUMMARY, reader.readLine());
+            assertEquals(testAuthor, reader.readLine());
+            assertNotNull(reader.readLine()); // Date format varies
+            assertEquals(testSummary, reader.readLine());
         }
     }
 
     @Test
     public void testGenerateSHA1() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(treeSHA1, testAuthor, testSummary);
         String expectedSHA1 = Blob
-                .sha1(TEST_TREE_SHA1 + "\n" + TEST_PARENT_COMMIT_SHA1 + "\n" + TEST_AUTHOR + "\n" +
+                .sha1(treeSHA1 + "\n" + parrentCommit + "\n" + testAuthor + "\n" +
                         commit.getDate()
-                        + "\n" + TEST_SUMMARY);
+                        + "\n" + testSummary);
 
         assertEquals(expectedSHA1, commit.generateSHA1());
     }
 
     @Test
     public void testGetDate() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(treeSHA1, testAuthor, testSummary);
         assertNotNull(commit.getDate());
     }
 
     @Test
     public void testCreateTree() throws Exception {
-        Commit commit = new Commit(TEST_TREE_SHA1, TEST_AUTHOR, TEST_SUMMARY);
+        Commit commit = new Commit(treeSHA1, testAuthor, testSummary);
         String treeSHA1 = commit.createTree();
         assertNotNull(treeSHA1);
     }
@@ -106,7 +106,7 @@ public class TestCommit {
         assertNotNull(commit);
         String expected = commit.getTreeSHA1() + "\n" + "objects/" + str + "\n\n" + author2 + "\n" + commit.getCurrentDate() + "\n" + text2;
         String actual = Commit.readFile("commit");
-        assertEquals(expectedContents, commitContents);
+        assertEquals(expected, actual);
     
     }
 }

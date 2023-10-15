@@ -116,7 +116,7 @@ public class Commit {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             writer.println(treeSHA1);
             writer.println(parentCommitSHA1 != null ? parentCommitSHA1 : "");
-            writer.println(""); // Placeholder for the SHA1 of the next commit (blank initially)
+            writer.println(""); // Placeholder for future commits
             writer.println(author);
             writer.println(date);
             writer.println(summary);
@@ -127,7 +127,7 @@ public class Commit {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
              writer.println(treeSHA1);
              writer.println(parentCommitSHA1 != null ? parentCommitSHA1 : "");
-            //writer.println(Blob.sha1 (Commit.readFile ("commit"))); // Placeholder for the SHA1 of the next commit (blank initially)
+            //writer.println(Blob.sha1 (Commit.readFile ("commit")));
              writer.println(author);
              writer.println(date);
              writer.println(summary);
@@ -137,10 +137,6 @@ public class Commit {
     // Create a Tree and return its SHA1
     public static String createTree() throws NoSuchAlgorithmException, IOException {
         Tree tree = new Tree("tree.txt");
-        // Add entries to the tree, for example:
-        // tree.add("file1.txt");
-        // tree.add("file2.txt");
-        // ...
         tree.generateBlob();
         return tree.sha1("tree.txt");
     }
