@@ -75,7 +75,7 @@ public class Commit {
         // String fileContents = treeSHA1 + "\n" + parentCommitSHA1 + "\n" + author +
         // "\n" + getDate() + "\n" + summary;
         // String parentCommitSHA1, String nextCommit, String author, String summary
-        String fileContents = parentCommitSHA1 + "\n" + author + "\n" + getDate() + "\n"
+        String fileContents = parentCommitSHA1 + "\n" + author + "\n" + getCurrentDate() + "\n"
                 + summary;
 
         // MessageDigest digest = MessageDigest.getInstance("SHA-1");
